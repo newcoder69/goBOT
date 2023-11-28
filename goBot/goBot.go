@@ -18,10 +18,7 @@ import (
 	
 	"github.com/bwmarrin/discordgo"
 )
-var(
-	youtubeAPIKey ="AIzaSyAp_g5OG5UUSpvc6Co_lasklGjFeqwjMIc"
-	customSearchID ="https://cse.google.com/cse.js?cx=20e96b3a33999445a"
-	googleAPIKey = "AIzaSyAp_g5OG5UUSpvc6Co_lasklGjFeqwjMIc"
+var (
 	messageCount map[string]int
 )
 	
@@ -29,7 +26,7 @@ var(
 func main(){
 	messageCount = make(map[string]int)
 	//create the bot session
-	dg, err := discordgo.New("Bot MTE3NzczNjc4NDAzNDEzNjE5NA.GDDePA.gI9fJhRe_EWI5gGl2F6gcS_Q9JOaSg6Ia32k5w")
+	dg, err := discordgo.New("Bot insert your bot token here")
 	if(err != nil){
 		fmt.Println("Error creating discord session", err)
 		return
