@@ -1,0 +1,28 @@
+func playAudioFile(s *discordgo.Session, guildID, filePath string) {
+	vc, err := s.ChannelVoiceJoin(guildID, "", false, false)
+	if err != nil {
+		fmt.Println("Error joining voice channel:", err)
+	}
+	defer vc.Close()
+
+	opts := dca.StdEncodeOptions
+	opts.RawOutput = true
+	opts.Bitrate = 96
+	opts.Application = "lowdelay"
+
+	encodeSession, err := dca.EncodeFile(filePath, opts)
+	if err != nil {
+		fmt.Println("Error encoding the file")
+	}
+	defer encodeSession.Cleanup()
+
+	done := make(chan error)
+	dca.NewStream(encodeSession, vc, done)
+
+	err = <-done
+	if err != nil && err != io.EOF {
+		fmt.Println("error Streaming audio:", err)
+		return
+	}
+
+}
