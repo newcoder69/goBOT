@@ -1,0 +1,80 @@
+func casinoEntrance(s *discordgo.Session, m *discordgo.MessageCreate) {
+	user := m.Author.ID
+
+	moneyCount[user] = 1000
+
+	if strings.HasPrefix(m.Content, "!wallet") {
+		s.ChannelMessageSend(m.ChannelID, "you have "+fmt.Sprint(moneyCount[user])+" dollars :dollar:")
+	}
+
+	if strings.HasPrefix(m.Content, "!casino") {
+		user_state[user] = "inside casino"
+		s.ChannelMessageSend(m.ChannelID, "Welcome to the casino! Your options are Slot Machine :slot_machine: (type !slotmachine), working on others after slot machine is finished")
+	}
+
+}
+
+
+func slotMachine(s *discordgo.Session, m *discordgo.MessageCreate) {
+	user := m.Author.ID
+	baseCost := 10
+	multiplier := 0.0
+
+	if strings.HasPrefix(m.Content, "!slotmachine") && user_state[user] == "inside casino" {
+		s.ChannelMessageSend(m.ChannelID, "Welcome to the slot machine! Test your luck \n it costs 10 coins to play plus you can bet for bigger rewards \n would you like to play?")
+		user_state[user] = "playing_slot"
+	} else if strings.HasPrefix(m.Content, "!slotmachine") && user_state[user] != "inside casino" {
+		{
+			s.ChannelMessageSend(m.ChannelID, "you're not in the casino silly goose. Welcome in!")
+			user_state[user] = "inside casino"
+		}
+
+	}
+	if user_state[user] == "playing_slot" && strings.HasPrefix(m.Content, "no") {
+		s.ChannelMessageSend(m.ChannelID, "okay have fun in the casino!")
+	} else if user_state[user] == "playing_slot" && strings.HasPrefix(m.Content, "yes") {
+		user_state[user] = "betting"
+		s.ChannelMessageSend(m.ChannelID, "awesome! the betting options are \n 0, \n 50, \n 100, \n 150, \n and 200")
+	}
+
+	if user_state[user] == "betting" && strings.HasPrefix(m.Content, "0") {
+		multiplier = 0
+		user_state[user] = "playing"
+		s.ChannelMessageSend(m.ChannelID, "alright bets are locked in. Ready to spin?")
+	} else if user_state[user] == "betting" && strings.HasPrefix(m.Content, "50") {
+		multiplier = .5
+		user_state[user] = "playing"
+		s.ChannelMessageSend(m.ChannelID, "alright bets are locked in. Ready to spin?")
+	} else if user_state[user] == "betting" && strings.HasPrefix(m.Content, "100") {
+		multiplier = 1.1
+		user_state[user] = "playing"
+		s.ChannelMessageSend(m.ChannelID, "alright bets are locked in. Ready to spin?")
+	} else if user_state[user] == "betting" && strings.HasPrefix(m.Content, "150") {
+		multiplier = 1.5
+		user_state[user] = "playing"
+		s.ChannelMessageSend(m.ChannelID, "alright bets are locked in. Ready to spin?")
+	} else if user_state[user] == "betting" && strings.HasPrefix(m.Content, "200") {
+		multiplier = 2.0
+		user_state[user] = "playing"
+		s.ChannelMessageSend(m.ChannelID, "alright bets are locked in. Ready to spin?")
+	}
+
+	if user_state[user] == "playing" && strings.HasPrefix(m.Content, "yes") {
+		rand := rand.Intn(100) + 1
+
+		if rand >= 1 && rand <= 10 {
+			s.ChannelMessageSend(m.ChannelID, "Sorry champ you lost, better luck next time. Try to get your money up and your funny down. :sad:")
+			loss := baseCost + (baseCost * int(multiplier))
+			moneyCount[user] = moneyCount[user] - float32(loss)
+		} else if rand >= 11 && rand <= 67 {
+			s.ChannelMessageSend(m.ChannelID, "Welp, you broke even. good job :sunglasses:")
+			moneyCount[user] = moneyCount[user]
+		} else if rand >= 68 && rand <= 99 {
+			s.ChannelMessageSend(m.ChannelID, "Congratulations, you win")
+			gain := baseCost + (baseCost * int(multiplier))
+			moneyCount[user] = moneyCount[user] + float32(gain)
+		}
+
+	}
+
+}
