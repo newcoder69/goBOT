@@ -41,7 +41,7 @@ func main() {
 	user_state = make(map[string]string)
 	bet_amount = make(map[string]int)
 	//create the bot session
-	dg, err := discordgo.New("Bot MTE3NzczNjc4NDAzNDEzNjE5NA.GsqVaT._PMuF6zHK1EHYadpZu9D1LkwcVdgMrHpHS449M")
+	dg, err := discordgo.New("Bot insert your bot token here")
 
 	if err != nil {
 		fmt.Println("Error creating discord session", err)
